@@ -8,7 +8,7 @@ torch.cuda.set_device(0)
 
 # data settings
 dataset_path = "dataset"
-class_name = "toothbrush"
+class_name = "transistor"
 modelname = "test_{}_128_parameters".format(class_name)
 
 img_size = (448, 448)
