@@ -7,14 +7,16 @@ from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
 
 import config as c
-from model import DifferNet, load_weights
+from model import DifferNet, load_weights, load_model
 from utils import *
 
-def test(test_loader,model_path):
-    model = DifferNet()
-    model = load_weights(model, model_path)
+def test(test_loader,model_path, output = False):
+    #model = DifferNet()
+    #model = load_weights(model, model_path)
+    model = load_model(model_path)
     model.to(c.device)
     model.eval()
+    print('loaded model')
 
     test_loss = list()
     test_z = list()
@@ -43,7 +45,10 @@ def test(test_loader,model_path):
     anomaly_score = t2np(torch.mean(z_grouped ** 2, dim=(-2, -1)))
     roc = roc_auc_score(is_anomaly, anomaly_score)
     print('AUROC is : ',round(roc,2))
-    print('mean predict time is ', round(np.mean(times),2))
+    pred_time = round(np.mean(times),2)
+    print('mean predict time is ', pred_time)
+    if output:
+        return roc, pred_time
 
 
 

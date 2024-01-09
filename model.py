@@ -3,7 +3,7 @@ import os
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torchvision.models import squeezenet1_0
+from torchvision.models import squeezenet1_1
 
 import config as c
 from freia_funcs import permute_layer, glow_coupling_layer, F_fully_connected, ReversibleGraphNet, OutputNode, \
@@ -30,7 +30,7 @@ def nf_head(input_dim=c.n_feat):
 class DifferNet(nn.Module):
     def __init__(self):
         super(DifferNet, self).__init__()
-        self.feature_extractor = squeezenet1_0(pretrained=True)
+        self.feature_extractor = squeezenet1_1(pretrained=True)
         self.nf = nf_head()
 
     def forward(self, x):

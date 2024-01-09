@@ -6,10 +6,6 @@ device = 'cuda' # or 'cpu'
 import torch
 torch.cuda.set_device(0)
 
-# data settings
-dataset_path = "dataset"
-class_name = "wood"
-modelname = "test_{}_128_parameters".format(class_name)
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
@@ -25,21 +21,28 @@ norm_mean, norm_std = [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
 # network hyperparameters
 n_scales = 3 # number of scales at which features are extracted, img_size is the highest - others are //2, //4,...
 clamp_alpha = 3 # see paper equation 2 for explanation
-n_coupling_blocks = 8
+n_coupling_blocks = 8 #8
 fc_internal = 2048 # number of neurons in hidden layers of s-t-networks
 dropout = 0.0 # dropout in s-t-networks
 lr_init = 2e-4
-n_feat = 128 * n_scales # do not change except you change the feature extractor
+features = 128
+n_feat = features * n_scales # do not change except you change the feature extractor
+
+# data settings
+# dataset_path = "../anomalib/datasets/MVTec"
+dataset_path = "../custom_dataset/"
+class_name = "soybean"
+modelname = f"test_{class_name}_{features}_feats_{n_coupling_blocks}_blocks_{fc_internal}_fc"
 
 # dataloader parameters
 n_transforms = 4 # number of transformations per sample in training
 n_transforms_test = 32 # number of transformations per sample in testing
-batch_size = 12 # actual batch size is this value multiplied by n_transforms(_test)
+batch_size = 8 # actual batch size is this value multiplied by n_transforms(_test)
 batch_size_test = batch_size * n_transforms // n_transforms_test
 
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs
-meta_epochs = 24
+meta_epochs = 4
 sub_epochs = 8
 
 # output settings

@@ -20,11 +20,14 @@ class Score_Observer:
 
     def update(self, score, epoch, print_score=False):
         self.last = score
-        if epoch == 0 or score > self.max_score:
+        is_high_score = (epoch == 0 or score > self.max_score)
+        if is_high_score:
             self.max_score = score
             self.max_epoch = epoch
         if print_score:
             self.print_score()
+
+        return is_high_score  
 
     def print_score(self):
         print('{:s}: \t last: {:.4f} \t max: {:.4f} \t epoch_max: {:d}'.format(self.name, self.last, self.max_score,
@@ -87,14 +90,19 @@ def train(train_loader, test_loader):
 
         z_grouped = torch.cat(test_z, dim=0).view(-1, c.n_transforms_test, c.n_feat)
         anomaly_score = t2np(torch.mean(z_grouped ** 2, dim=(-2, -1)))
-        score_obs.update(roc_auc_score(is_anomaly, anomaly_score), epoch,
+        is_high_score = score_obs.update(roc_auc_score(is_anomaly, anomaly_score), epoch,
                          print_score=c.verbose or epoch == c.meta_epochs - 1)
+        if c.save_model and is_high_score:
+            #model.to('cpu')
+            print("saving model...")
+            save_model(model, c.modelname)
+            save_weights(model, c.modelname)
 
     if c.grad_map_viz:
         export_gradient_maps(model, test_loader, optimizer, -1)
 
-    if c.save_model:
-        model.to('cpu')
-        save_model(model, c.modelname)
-        save_weights(model, c.modelname)
+    # if c.save_model:
+    #     model.to('cpu')
+    #     save_model(model, c.modelname)
+    #     save_weights(model, c.modelname)
     return model
